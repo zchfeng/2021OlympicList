@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://lib.baomitu.com/echarts/5.1.2/echarts.common.js"></script>
+</head>
+<body>
+    <div id="main" style="min-width: 600px;min-height:400px;"></div>
+</body>
+</html>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+    function fetchData(){
+        fetch('http://localhost:3000/data').then(response => response.json())
+        .then(res=>{
+            const { list , update_time } = res
+            // 指定图表的配置项和数据
+            var option = {
+                    title:{
+                        text: "2021奥运排名"
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                            type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    legend: {
+                        data: ['金牌', '银牌', '铜牌']
+                    },
+                    dataZoom: [
+                    //     {
+                    //     type: 'slider',
+                    //     show: true,
+                    //     xAxisIndex: [0],
+                    //     left: '8%',
+                    //     bottom: 0,
+                    //     start: 0,
+                    //     end: 10 //初始化滚动条
+                    // },
+                    {
+                        type: 'slider',//滑动轴
+                        left: '5%',
+                        bottom: 0,
+                        start: 0,//初始刻度条起始位置
+                        end: 10//初始刻度条终点位置
+                    },
+                    {
+                        type: 'inside',
+                        orient: 'horizontal',
+                        start: 15,
+                        end: 65
+                    }
+                    ],
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '7%',
+                        containLabel: true
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: [],
+                    },
+                    series: [
+                        {
+                            name: '铜牌',
+                            type: 'bar',
+                            stack: '总量',
+                            label: {
+                                show: true,
+                                position: 'insideRight'
+                            },
+                            data: []
+                        },
+                        {
+                            name: '银牌',
+                            type: 'bar',
+                            stack: '总量',
+                            label: {
+                                show: true,
+                                position: 'insideRight'
+                            },
+                            data: []
+                        },
+                        {
+                            name: '金牌',
+                            type: 'bar',
+                            stack: '总量',
+                            label: {
+                                show: true,
+                                position: 'insideRight'
+                            },
+                            data: []
+                        },
+                        {
+                            name: '总数量',
+                            type: 'line',
+                            stack: '总量',
+                            label: {
+                                show: true,
+                                position: 'insideRight'
+                            },
+                            data: []
+                        },
+                    ]
+                };
+
+                list.map(item=>{
+                    const {country,jin,tong,yin,total} = item
+                    option.xAxis.data.push(country)
+                    option.series[2].data.push(jin)
+                    option.series[1].data.push(yin)
+                    option.series[0].data.push(tong)
+                    option.series[3].data.push(total)
+                })
+
+            // 使用刚指定的配置项和数据显示图表。
+            myChart.setOption(option);
+        })
+    }
+    fetchData()
+   setInterval(()=>{
+    fetchData()
+    },12*60*60*1000)
+
+   
+</script>
